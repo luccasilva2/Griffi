@@ -1,9 +1,39 @@
 import 'package:flutter/material.dart';
 
-class ImageReproductionScreen extends StatelessWidget {
+class ImageReproductionScreen extends StatefulWidget {
   final bool isAdmin;
 
   const ImageReproductionScreen({super.key, required this.isAdmin});
+
+  @override
+  State<ImageReproductionScreen> createState() => _ImageReproductionScreenState();
+}
+
+class _ImageReproductionScreenState extends State<ImageReproductionScreen> {
+  final List<String> imageUrls = [
+    'assets/images/image1.png',
+    'assets/images/image2.png',
+    'assets/images/image3.png',
+    'assets/images/image4.png',
+    'assets/images/image5.png',
+  ];
+
+  int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start automatic image slider
+    Future.delayed(const Duration(seconds: 3), _nextImage);
+  }
+
+  void _nextImage() {
+    if (!mounted) return;
+    setState(() {
+      _currentIndex = (_currentIndex + 1) % imageUrls.length;
+    });
+    Future.delayed(const Duration(seconds: 3), _nextImage);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -11,11 +41,12 @@ class ImageReproductionScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Tela inicial do aplicativo'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Text(
-          'Tela inicial do aplicativo com uma reprodução de imagens aonde o usuario ira poder colocar mais imagens a partir das config do aplicativo por uma função aonde so administradores do aplicativo a partir do email terão acesso a essa parte',
-          style: Theme.of(context).textTheme.bodyLarge,
+      body: Center(
+        child: Image.asset(
+          imageUrls[_currentIndex],
+          width: 300,
+          height: 200,
+          fit: BoxFit.cover,
         ),
       ),
     );

@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     _screens.add(HomeScreen(onStartPressed: () {
       setState(() {
-        _currentIndex = 1;
+        _currentIndex = 1; // Switch to ImageReproductionScreen after logo screen
       });
     }));
     _screens.add(ImageReproductionScreen(isAdmin: isAdmin));
@@ -50,28 +50,26 @@ class _MyAppState extends State<MyApp> {
       ),
       home: Scaffold(
         body: _screens[_currentIndex],
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: onTabTapped,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Início',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.image),
-              label: 'Imagens',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag),
-              label: 'Produtos',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Configurações',
-            ),
-          ],
-        ),
+        bottomNavigationBar: _currentIndex == 0
+            ? null
+            : BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: onTabTapped,
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Início',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.shopping_bag),
+                    label: 'Produtos',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.settings),
+                    label: 'Configurações',
+                  ),
+                ],
+              ),
       ),
     );
   }
