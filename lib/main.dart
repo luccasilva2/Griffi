@@ -1,75 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'theme/app_theme.dart';
+import 'screens/splash_screen.dart';
+import 'screens/gallery_screen.dart';
+import 'screens/portfolio_screen.dart';
+import 'screens/materials_screen.dart';
+import 'screens/quote_screen.dart';
 import 'screens/home_screen.dart';
-import 'screens/image_reproduction_screen.dart';
-import 'screens/products_screen.dart';
-import 'screens/settings_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ),
+  );
+  runApp(const GriffiApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool isAdmin = false;
-  int _currentIndex = 0;
-
-  final List<Widget> _screens = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _screens.add(HomeScreen(onStartPressed: () {
-      setState(() {
-        _currentIndex = 1; // Switch to ImageReproductionScreen after logo screen
-      });
-    }));
-    _screens.add(ImageReproductionScreen(isAdmin: isAdmin));
-    _screens.add(const ProductsScreen());
-    _screens.add(const SettingsScreen());
-  }
-
-  void onTabTapped(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
+class GriffiApp extends StatelessWidget {
+  const GriffiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Griffi App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        body: _screens[_currentIndex],
-        bottomNavigationBar: _currentIndex == 0
-            ? null
-            : BottomNavigationBar(
-                currentIndex: _currentIndex,
-                onTap: onTabTapped,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Início',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.shopping_bag),
-                    label: 'Produtos',
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.settings),
-                    label: 'Configurações',
-                  ),
-                ],
-              ),
+      title: 'Griffi',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.dark,
+      home: const AppShell(),
+    );
+  }
+}
+
+class AppShell extends StatefulWidget {
+  const AppShell({super.key});
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  bool _showSplash = true;
+  int _currentIndex = 0;
+
+  final List<Widget> _pages = const [
+    HomeScreen(),
+    GalleryScreen(),
+    PortfolioScreen(),
+    MaterialsScreen(),
+    QuoteScreen(),
+  ];
+
+  void _onSplashFinished() {
+    setState(() => _showSplash = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_showSplash) {
+      return SplashScreen(onFinished: _onSplashFinished);
+    }
+
+    return Scaffold(
+      body: IndexedStack(index: _currentIndex, children: _pages),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: AppTheme.divider, width: 0.5)),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (i) => setState(() => _currentIndex = i),
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Início',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chair_outlined),
+              activeIcon: Icon(Icons.chair),
+              label: 'Catálogo',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.auto_awesome_mosaic_outlined),
+              activeIcon: Icon(Icons.auto_awesome_mosaic),
+              label: 'Portfólio',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.category_outlined),
+              activeIcon: Icon(Icons.category),
+              label: 'Materiais',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calculate_outlined),
+              activeIcon: Icon(Icons.calculate),
+              label: 'Orçamento',
+            ),
+          ],
+        ),
       ),
     );
   }
